@@ -10,44 +10,45 @@ left: 2.5%
 `;
 
 export const render = ({ output, devices, error }) => {
-	return error ? (
-		<>
-			<div>{error}</div>
-		</>
-	) : (
-		<div>
-			{devices.map((device) => (
-				<Device bluetoothDevice={device} />
-			))}
-			<p>{output}</p>
-		</div>
-	);
+  return error ? (
+    <>
+      <div>{error}</div>
+    </>
+  ) : (
+    <div>
+      {devices.map((device) => (
+        <Device bluetoothDevice={device} />
+      ))}
+      <p>{output}</p>
+    </div>
+  );
 };
 
 export const updateState = (event, previousState) => {
-	const { type, output } = event;
-	if (event.error) {
-		return {
-			devices: [],
-			error: `Something went wrong while getting BT state.`,
-		};
-	}
-	if (output) {
-		const response = yaml.load(output);
-		const devices = response?.Bluetooth?.Connected;
-		const connectedDeviceNames = Object.keys(devices);
-		const btDevices = [];
-		for (const deviceName of connectedDeviceNames) {
-			const device = devices[deviceName];
-			console.log(device);
-			btDevices.push(new BluetoothDevice(deviceName, device));
-		}
-		return {
-			devices: btDevices,
-		};
-	} else {
-		return { devices: [] };
-	}
+  const { type, output } = event;
+  if (event.error) {
+    return {
+      devices: [],
+      error: `Something went wrong while getting BT state.`,
+    };
+  }
+  if (output) {
+    const response = yaml.load(output);
+    const devices = response?.Bluetooth?.Connected;
+    if (devices) {
+      const connectedDeviceNames = Object.keys(devices);
+      const btDevices = [];
+      for (const deviceName of connectedDeviceNames) {
+        const device = devices[deviceName];
+        btDevices.push(new BluetoothDevice(deviceName, device));
+      }
+      return {
+        devices: btDevices,
+      };
+    }
+  } else {
+    return { devices: [] };
+  }
 };
 
 // Once every five minutes
