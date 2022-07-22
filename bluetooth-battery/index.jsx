@@ -46,6 +46,7 @@ export const updateState = (event, previousState) => {
         devices: btDevices,
       };
     }
+    return { devices: [] };
   } else {
     return { devices: [] };
   }
